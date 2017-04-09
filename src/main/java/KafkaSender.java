@@ -22,7 +22,7 @@ class KafkaSender {
                 "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer",
                 "org.apache.kafka.common.serialization.StringSerializer");
-
+        
         Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<String, String>(props);
         producer.send(new ProducerRecord<String, String>(topicName,
                 "1", "Hello"));
