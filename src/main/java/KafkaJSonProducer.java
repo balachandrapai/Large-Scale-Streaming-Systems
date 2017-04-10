@@ -1,12 +1,15 @@
-/**
- * Created by Pai on 08-03-2017.
- */
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import java.util.Properties;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-class KafkaSender {
+
+
+/**
+ * Created by Pai on 09-04-2017.
+ */
+public class KafkaJSonProducer {
 
     public static void main(String[] args) throws Exception{
 
@@ -24,11 +27,20 @@ class KafkaSender {
                 "org.apache.kafka.common.serialization.StringSerializer");
 
         Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<String, String>(props);
-        producer.send(new ProducerRecord<String, String>(topicName,
-                "1", "Hello"));
-        producer.send(new ProducerRecord<String, String>(topicName,
-                "2", "World"));
+            try {
+                JSONObject record = new JSONObject();
+                record.put("name", "Balachandra");
+                record.put("age", "25");
 
+                JSONObject record2 = new JSONObject();
+                record.put("name", "Likith");
+                record.put("age", "25");
+
+                producer.send(new ProducerRecord<String, String>(topicName, record.toString()));
+                producer.send(new ProducerRecord<>(topicName, record2.toString()));
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
         System.out.println("Message sent successfully");
         producer.close();
     }
