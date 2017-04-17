@@ -82,7 +82,7 @@ public class KafkaTests {
     public void someKafkaTest() {
 
         try {
-            SparkStreamerJob.main(new String[]{
+            SparkStreamingJSonJob.main(new String[]{
                     zookeeperConnect, "my-consumer-group", "test", "1"
 
             });

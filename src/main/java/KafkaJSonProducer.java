@@ -32,12 +32,13 @@ public class KafkaJSonProducer {
                 record.put("name", "Balachandra");
                 record.put("age", "25");
 
-                JSONObject record2 = new JSONObject();
-                record.put("name", "Likith");
-                record.put("age", "25");
+                producer.send(new ProducerRecord<>(topicName, record.toString()));
 
-                producer.send(new ProducerRecord<String, String>(topicName, record.toString()));
-                producer.send(new ProducerRecord<>(topicName, record2.toString()));
+//                JSONObject record2 = new JSONObject();
+//                record.put("name", "Likith");
+//                record.put("age", "25");
+//
+//                producer.send(new ProducerRecord<>(topicName, record2.toString()));
             }catch (JSONException e){
                 e.printStackTrace();
             }
