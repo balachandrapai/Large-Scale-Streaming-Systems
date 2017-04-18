@@ -88,7 +88,8 @@ public class KafkaTests {
 //            });
             
             FlinkStreamingJob.main(new String[]{
-          "--topic test01", "--bootstrap.servers localhost:9092", "--zookeeper.connect zookeeperConnect", "--group.id my-consumer-group"
+          "--topic", "test", "--bootstrap.servers", "localhost:9092",
+                    "--zookeeper.connect", "zookeeperConnect", "--group.id", "my-consumer-group"
             });
 
 

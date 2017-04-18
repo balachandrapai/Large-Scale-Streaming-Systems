@@ -11,6 +11,9 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <!--<scala.version>2.10.6</scala.version>-->
+        <!--<scala.binary.version>2.10</scala.binary.version>-->
+
     </properties>
 
     <dependencies>
@@ -58,27 +61,21 @@
             <version>0.10.2.0</version>
         </dependency>
         <dependency>
-    		<groupId>org.apache.flink</groupId>
-    		<artifactId>flink-streaming-java_2.10</artifactId>
-    		<version>1.2.0</version>
-		</dependency>
-		<dependency>
-    		<groupId>org.apache.flink</groupId>
-    		<artifactId>flink-connector-kafka-0.8_2.10</artifactId>
-   			<version>1.2.0</version>
-		</dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>0.10.2.0</version>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java_2.11</artifactId>
+            <version>1.2.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka-0.10_2.11</artifactId>
+            <version>1.2.0</version>
+        </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.apache.zookeeper</groupId>-->
-            <!--<artifactId>zookeeper</artifactId>-->
-            <!--<version>3.4.5</version>-->
+        <!--<groupId>org.apache.flink</groupId>-->
+        <!--<artifactId>flink-core</artifactId>-->
+        <!--<version>1.2.0</version>-->
         <!--</dependency>-->
-
+        
     </dependencies>
 
 </project>

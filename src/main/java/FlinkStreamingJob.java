@@ -20,7 +20,8 @@ import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer08;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 
 
@@ -35,6 +36,7 @@ import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
 public class FlinkStreamingJob {
 
 	public static void main(String[] args) throws Exception {
+		System.setProperty("hadoop.home.dir", "c:/winutils/");
 		// parse input arguments
 		final ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
@@ -51,7 +53,7 @@ public class FlinkStreamingJob {
 		env.getConfig().setGlobalJobParameters(parameterTool); // make parameters available in the web interface
 
 		DataStream<String> messageStream = env
-				.addSource(new FlinkKafkaConsumer08<>(
+				.addSource(new FlinkKafkaConsumer010<>(
 						parameterTool.getRequired("topic"),
 						new SimpleStringSchema(),
 						parameterTool.getProperties()));
@@ -59,6 +61,6 @@ public class FlinkStreamingJob {
 		// write kafka stream to standard out.
 		messageStream.print();
 
-		env.execute("Read from Kafka example");
+		env.execute();
 	}
 }
