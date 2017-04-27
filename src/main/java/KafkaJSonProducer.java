@@ -1,3 +1,4 @@
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.codehaus.jettison.json.JSONException;
@@ -26,7 +27,7 @@ public class KafkaJSonProducer {
         props.put("value.serializer",
                 "org.apache.kafka.common.serialization.StringSerializer");
 
-        Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<String, String>(props);
+        Producer<String, String> producer = new KafkaProducer<String, String>(props);
             try {
                 JSONObject record = new JSONObject();
                 record.put("name", "Balachandra");
