@@ -11,8 +11,6 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <!--<scala.version>2.10.6</scala.version>-->
-        <!--<scala.binary.version>2.10</scala.binary.version>-->
 
     </properties>
 
@@ -75,6 +73,7 @@
         <!--<artifactId>flink-core</artifactId>-->
         <!--<version>1.2.0</version>-->
         <!--</dependency>-->
+
 
     </dependencies>
 

@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Pai on 18-04-2017.
  */
-class SparkStreamingJSonJob {
+public class SparkStreamingJSonJob {
 
     private static final Pattern SPACE = Pattern.compile(" ");
 
