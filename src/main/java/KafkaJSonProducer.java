@@ -26,22 +26,17 @@ public class KafkaJSonProducer {
         props.put("key.serializer",
                 "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer",
-                "KafkaJsonSerializer.class.getName()");
+                "org.apache.kafka.common.serialization.StringSerializer");
 
 
-        Producer<String, JSONObject> producer = new org.apache.kafka.clients.producer.KafkaProducer<String, JSONObject>(props);
-            try {
+Producer<String, String> producer = new KafkaProducer<String, String>(props);
+       try {
                 JSONObject record = new JSONObject();
                 record.put("name", "Harry Potter");
                 record.put("age", "25");
 
-                producer.send(new ProducerRecord<>(topicName, record));
+                producer.send(new ProducerRecord<>(topicName, record.toString()));
 
-//                JSONObject record2 = new JSONObject();
-//                record.put("name", "Likith");
-//                record.put("age", "25");
-//
-//                producer.send(new ProducerRecord<>(topicName, record2.toString()));
             }catch (JSONException e){
                 e.printStackTrace();
             }
