@@ -65,6 +65,9 @@ public class SparkStreamerJob {
 
 
         JavaDStream<String> lines = messages.map(Tuple2::_2);
+        
+        //xurrent time - timestamp
+        lines.count();
 
         JavaDStream<String> words = lines.flatMap(x -> Arrays.asList(SPACE.split(x)).iterator());
 

@@ -1,3 +1,4 @@
+import org.apache.hadoop.util.Time;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
 import org.apache.kafka.clients.producer.Producer;
@@ -5,6 +6,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 
@@ -32,8 +35,7 @@ public class KafkaJSonProducer {
 Producer<String, String> producer = new KafkaProducer<String, String>(props);
        try {
                 JSONObject record = new JSONObject();
-                record.put("name", "Harry Potter");
-                record.put("age", "25");
+                record.put("timeStamp",System.currentTimeMillis());
 
                 producer.send(new ProducerRecord<>(topicName, record.toString()));
 
@@ -41,6 +43,7 @@ Producer<String, String> producer = new KafkaProducer<String, String>(props);
                 e.printStackTrace();
             }
         System.out.println("Message sent successfully");
+        
         producer.close();
     }
 }

@@ -1,14 +1,17 @@
-import com.fasterxml.jackson.core.JsonParser;
+
 import com.google.common.collect.Lists;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaPairReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.streaming.dstream.DStream;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import org.codehaus.jettison.json.JSONObject;
 import scala.Tuple2;
@@ -66,15 +69,17 @@ public class SparkStreamingJSonJob {
 
         JavaPairReceiverInputDStream<String, String> messages =
                 KafkaUtils.createStream(jssc, args[0], args[1], topicMap);
+        
 
-        JavaDStream<String> lines = messages.map(Tuple2::_2);
+        //JavaDStream<String> lines = messages.map(Tuple2::_2);
+        messages.print();
+        
+        
+        DStream<Tuple2<String,String>> dstream = messages.dstream();
+        System.out.println(dstream.toString());
+    
 
-        lines.print();
-
-
-
-
-
+//        lines.print();
 
         jssc.start();
         jssc.awaitTermination();
