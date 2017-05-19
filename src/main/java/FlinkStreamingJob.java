@@ -57,8 +57,7 @@ public class FlinkStreamingJob {
 						parameterTool.getRequired("topic"),
 						new SimpleStringSchema(),
 						parameterTool.getProperties()));
-		//JSONKeyValueDeserializationSchema
-		
+
 		// write kafka stream to standard out.
 		messageStream.print();
 
