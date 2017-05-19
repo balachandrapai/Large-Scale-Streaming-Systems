@@ -63,10 +63,10 @@ public class KafkaTests {
         kafkaProps.put("zookeeper.connect", zookeeperConnect);
         kafkaProps.put("client.id", "KafkaSuite");
         kafkaProps.put("group.id", "test-group");
-//        kafkaProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-//        kafkaProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-//        kafkaProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//        kafkaProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        kafkaProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaProps.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaProps.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        kafkaProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         kafkaProps.setProperty("delete.topic.enable", "true");
         kafkaProps.setProperty("auto.offset.reset", "earliest");
 
@@ -82,15 +82,15 @@ public class KafkaTests {
     public void someKafkaTest() {
 
         try {
-            SparkStreamingJSonJob.main(new String[]{
-                    zookeeperConnect, "my-consumer-group", "test", "1"
-
-            });
+//            SparkStreamingJSonJob.main(new String[]{
+//                    zookeeperConnect, "my-consumer-group", "test", "1"
 //
-//            FlinkStreamingJob.main(new String[]{
-//          "--topic", "test", "--bootstrap.servers", "localhost:9092",
-//                    "--zookeeper.connect", "zookeeperConnect", "--group.id", "my-consumer-group"
 //            });
+            
+            FlinkStreamingJob.main(new String[]{
+          "--topic", "test", "--bootstrap.servers", "localhost:9092",
+                    "--zookeeper.connect", "zookeeperConnect", "--group.id", "my-consumer-group"
+            });
 
 
         } catch (Exception e) {
