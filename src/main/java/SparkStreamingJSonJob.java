@@ -71,11 +71,6 @@ public class SparkStreamingJSonJob {
 
         lines.print();
 
-
-
-
-
-
         jssc.start();
         jssc.awaitTermination();
     }
