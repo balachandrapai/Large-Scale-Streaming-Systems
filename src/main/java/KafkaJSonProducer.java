@@ -35,8 +35,9 @@ public class KafkaJSonProducer {
 Producer<String, String> producer = new KafkaProducer<String, String>(props);
        try {
                 JSONObject record = new JSONObject();
-                record.put("timeStamp",System.currentTimeMillis());
-
+                record.put("name", "Harry Potter");
+                record.put("age", "25");
+                record.put("Time", System.currentTimeMillis());
                 producer.send(new ProducerRecord<>(topicName, record.toString()));
 
             }catch (JSONException e){

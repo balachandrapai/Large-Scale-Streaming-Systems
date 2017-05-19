@@ -37,7 +37,7 @@ public class SparkStreamingJSonJob {
         if (!log4jInitialized) {
             // We first log something to initialize Spark's default logging, then we override the
             // logging level.
-            Logger.getLogger(SparkStreamerJob.class).info("Setting log level to [WARN] for streaming job" +
+            Logger.getLogger(SparkStreamingJSonJob.class).info("Setting log level to [WARN] for streaming job" +
                     " To override add a custom log4j.properties to the classpath.");
             Logger.getRootLogger().setLevel(Level.WARN);
         }
@@ -77,7 +77,6 @@ public class SparkStreamingJSonJob {
         
         DStream<Tuple2<String,String>> dstream = messages.dstream();
         System.out.println(dstream.toString());
-    
 
 //        lines.print();
 
