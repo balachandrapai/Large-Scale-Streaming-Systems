@@ -3,7 +3,9 @@ import com.google.common.collect.Lists;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
@@ -68,6 +70,7 @@ public class SparkStreamingJSonJob {
                 KafkaUtils.createStream(jssc, args[0], args[1], topicMap);
 
         JavaDStream<String> lines = messages.map(Tuple2::_2);
+
 
         lines.print();
 

@@ -82,15 +82,15 @@ public class KafkaTests {
     public void someKafkaTest() {
 
         try {
-//            SparkStreamingJSonJob.main(new String[]{
-//                    zookeeperConnect, "my-consumer-group", "test", "1"
-//
-//            });
-            
-            FlinkStreamingJob.main(new String[]{
-          "--topic", "test", "--bootstrap.servers", "localhost:9092",
-                    "--zookeeper.connect", "zookeeperConnect", "--group.id", "my-consumer-group"
+            SparkStreamingJSonJob.main(new String[]{
+                    zookeeperConnect, "my-consumer-group", "test", "1"
+
             });
+            
+//            FlinkStreamingJob.main(new String[]{
+//          "--topic", "test", "--bootstrap.servers", "localhost:9092",
+//                    "--zookeeper.connect", "zookeeperConnect", "--group.id", "my-consumer-group"
+//            });
 
 
         } catch (Exception e) {
