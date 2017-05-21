@@ -58,7 +58,7 @@ public class SparkStreamingJSonJob {
 
         SparkConf sparkConf = new SparkConf().setAppName("StreamingJob").setMaster("local[16]");
         // Create the context with 2 seconds batch size
-        JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(10));
+        JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(1));
 
         int numThreads = Integer.parseInt(args[3]);
         Map<String, Integer> topicMap = new HashMap<>();
@@ -77,6 +77,8 @@ public class SparkStreamingJSonJob {
             @Override
             public void call(JavaRDD<String> stringJavaRDD) throws Exception {
 
+                stringJavaRDD.count();
+
                 stringJavaRDD.foreach(new VoidFunction<String>() {
                     @Override
                     public void call(String s) throws Exception {
@@ -85,11 +87,9 @@ public class SparkStreamingJSonJob {
                         System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
                     }
                 });
-
-
-
             }
         });
+
         lines.print();
 
         jssc.start();
