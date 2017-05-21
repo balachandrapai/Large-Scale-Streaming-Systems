@@ -4,6 +4,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Durations;
@@ -14,6 +15,7 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import org.codehaus.jettison.json.JSONObject;
 import scala.Tuple2;
+import scala.util.parsing.json.JSON;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,7 +73,23 @@ public class SparkStreamingJSonJob {
 
         JavaDStream<String> lines = messages.map(Tuple2::_2);
 
+        lines.foreachRDD(new VoidFunction<JavaRDD<String>>() {
+            @Override
+            public void call(JavaRDD<String> stringJavaRDD) throws Exception {
 
+                stringJavaRDD.foreach(new VoidFunction<String>() {
+                    @Override
+                    public void call(String s) throws Exception {
+
+                        JSONObject json = new JSONObject(s);
+                        System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
+                    }
+                });
+
+
+
+            }
+        });
         lines.print();
 
         jssc.start();
