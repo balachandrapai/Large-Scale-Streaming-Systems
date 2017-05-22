@@ -31,13 +31,13 @@ public class KafkaJSonProducer {
 
         Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<String, String>(props);
             try {
-                JSONObject record = new JSONObject();
-                record.put("name", "Harry Potter");
-                record.put("age", "25");
-                record.put("Time", System.currentTimeMillis());
 
-                producer.send(new ProducerRecord<String, String>(topicName,
-                        "1", record.toString()));
+                for(int i=0; i<Integer.MAX_VALUE; i++){
+                    JSONObject record = new JSONObject();
+                    record.put("message_no", i);
+                    record.put("Time", System.currentTimeMillis());
+                    producer.send(new ProducerRecord<String, String>(topicName, ""+i, record.toString()));
+                }
 
             }catch (JSONException e){
                 e.printStackTrace();

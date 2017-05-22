@@ -57,7 +57,7 @@ public class SparkStreamingJSonJob {
         setLogLevels();
 
         SparkConf sparkConf = new SparkConf().setAppName("StreamingJob").setMaster("local[16]");
-        // Create the context with 2 seconds batch size
+        // Create the context with 1 seconds batch size
         JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(1));
 
         int numThreads = Integer.parseInt(args[3]);
@@ -67,30 +67,22 @@ public class SparkStreamingJSonJob {
             topicMap.put(topic, numThreads);
         }
 
-
         JavaPairReceiverInputDStream<String, String> messages =
                 KafkaUtils.createStream(jssc, args[0], args[1], topicMap);
 
-        JavaDStream<String> lines = messages.map(Tuple2::_2);
-
-        lines.foreachRDD(new VoidFunction<JavaRDD<String>>() {
+        messages.foreachRDD(new VoidFunction<JavaPairRDD<String, String>>() {
             @Override
-            public void call(JavaRDD<String> stringJavaRDD) throws Exception {
-
-                stringJavaRDD.count();
-
-                stringJavaRDD.foreach(new VoidFunction<String>() {
+            public void call(JavaPairRDD<String, String> rdd) throws Exception {
+                System.out.println("Messages per sec: "+rdd.count());
+                rdd.foreach(new VoidFunction<Tuple2<String, String>>() {
                     @Override
-                    public void call(String s) throws Exception {
-
-                        JSONObject json = new JSONObject(s);
-                        System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
+                    public void call(Tuple2<String, String> stringStringTuple2) throws Exception {
+//                        JSONObject json = new JSONObject(stringStringTuple2._2);
+//                        System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
                     }
                 });
             }
         });
-
-        lines.print();
 
         jssc.start();
         jssc.awaitTermination();
