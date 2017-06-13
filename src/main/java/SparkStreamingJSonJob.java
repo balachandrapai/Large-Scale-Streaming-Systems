@@ -77,8 +77,8 @@ public class SparkStreamingJSonJob {
                 rdd.foreach(new VoidFunction<Tuple2<String, String>>() {
                     @Override
                     public void call(Tuple2<String, String> stringStringTuple2) throws Exception {
-//                        JSONObject json = new JSONObject(stringStringTuple2._2);
-//                        System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
+                        JSONObject json = new JSONObject(stringStringTuple2._2);
+                        System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
                     }
                 });
             }
