@@ -87,47 +87,20 @@ public class FlinkStreamingJob {
 
 //		SingleOutputStreamOperator<Tuple1> sum = messageStream.map(line->new Tuple1(1)).keyBy(0).window(TumblingAlignedProcessingTimeWindows.of(Time.seconds(1))).sum(0);
 		
-	
-		
-//		System.out.println("Records-per-second-"+sum.getTransformation().getBufferTimeout());
-		
 		messageStream.map(new MapFunction<String, String>() {
 			
 			@Override
 			public String map(String value) throws Exception {
-//				String[] firstVal=value.split(",");
-//				String[] split = firstVal[0].split(":");
-//				int messageValue = Integer.parseInt(split[2]);
-//				
-//				String[] split2 = firstVal[1].split(":");
-//				String messageTime =split2[1];
-//				
-				
-				
-//				if(seconds==Calendar.getInstance().getTime().getSeconds()){
-//					count++;
-//				}
-//				else{
-//					System.out.println("Flink Streaming Throughput (Msgs/sec) :"+count );
-//					count=0;
-//					seconds=Calendar.getInstance().getTime().getSeconds();
-//					}
-				
-//				System.out.println("Flink Streaming Throughput (Msgs/sec) :"+value);
 				
 				JSONObject json = new JSONObject(value);
 				System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
-				 
 				
 				return value;
 			}
 		});
 		
-
 		// write kafka stream to standard out
-//		messageStream.windowAll(, Time.of(1, TimeUnit.SECONDS));
-//		AllWindowedStream<String,TimeWindow> timeWindowAll = messageStream.timeWindowAll(Time.seconds(1));
-//		messageStream.print();
+		messageStream.print();
 		env.execute();
 		
 	}
