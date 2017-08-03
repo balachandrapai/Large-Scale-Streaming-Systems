@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,59 +16,61 @@
  * limitations under the License.
  */
 
-
+import org.apache.flink.api.common.ExecutionConfig;
+import org.apache.flink.api.common.JobExecutionResult;
+import org.apache.flink.api.common.accumulators.LongCounter;
+import org.apache.flink.api.common.functions.IterationRuntimeContext;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.RichFunction;
+import org.apache.flink.api.common.functions.RuntimeContext;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
-import org.apache.flink.api.java.functions.FormattingMapper;
-import org.apache.flink.api.java.tuple.Tuple1;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.client.program.ClusterClient;
+import org.apache.flink.client.program.StandaloneClusterClient;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.runtime.executiongraph.ExecutionVertex;
 import org.apache.flink.streaming.api.TimeCharacteristic;
-import org.apache.flink.streaming.api.datastream.AllWindowedStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.IterativeStream;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingAlignedProcessingTimeWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09;
 import org.apache.flink.streaming.util.serialization.SimpleStringSchema;
-import org.apache.hadoop.fs.shell.Count;
-import org.apache.hadoop.hdfs.server.common.GenerationStamp;
-import org.apache.spark.streaming.api.java.JavaDStream;
 import org.codehaus.jettison.json.JSONObject;
-import scala.Tuple2;
-import scala.collection.parallel.ParIterableLike;
-
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-/**
- * Created by Likith on 18-04-2017.
- */
 
 /**
- * Read Strings from Kafka and print them to standard out.
- * Note: On a cluster, DataStream.print() will print to the TaskManager's .out file!
+ * @author likith,pai
+ */
+/**
+ * Read Strings from Kafka and print them to standard out. Note: On a cluster,
+ * DataStream.print() will print to the TaskManager's .out file!
  *
- * Please pass the following arguments to run the example:
- * 	--topic test --bootstrap.servers localhost:9092 --zookeeper.connect localhost:2181 --group.id myconsumer
+ * Please pass the following arguments to run the example: --topic test
+ * --bootstrap.servers localhost:9092 --zookeeper.connect localhost:2181
+ * --group.id myconsumer
  *
  */
-public class FlinkStreamingJob {
-	static int count =0;
-	static Timer timer=new Timer();
+public class FlinkStreamingJob implements RichFunction, Runnable {
 
+	private static String[] args = {};
+
+	public FlinkStreamingJob(String[] strings) {
+		args = strings;
+	}
+
+	private static LongCounter messagesCounter;
+
+	/**
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		System.setProperty("hadoop.home.dir", "c:/winutils/");
 		// parse input arguments
 		final ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
-		if(parameterTool.getNumberOfParameters() < 4) {
-			System.out.println("Missing parameters!\nUsage: Kafka --topic <topic> " +
-					"--bootstrap.servers <kafka brokers> --zookeeper.connect <zk quorum> --group.id <some id>");
+		if (parameterTool.getNumberOfParameters() < 4) {
+			System.out.println("Missing parameters!\nUsage: Kafka --topic <topic> "
+					+ "--bootstrap.servers <kafka brokers> --zookeeper.connect <zk quorum> --group.id <some id>");
 			return;
 		}
 
@@ -75,41 +78,84 @@ public class FlinkStreamingJob {
 		env.getConfig().disableSysoutLogging();
 		env.getConfig().setRestartStrategy(RestartStrategies.fixedDelayRestart(4, 10000));
 		env.enableCheckpointing(1000); // create a checkpoint every 1 seconds
-		env.getConfig().setGlobalJobParameters(parameterTool); // make parameters available in the web interface
+		env.getConfig().setGlobalJobParameters(parameterTool); // make
+																// parameters
+																// available in
+																// the web
+																// interface
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-		
-		
-		DataStream<String> messageStream = env
-				.addSource(new FlinkKafkaConsumer010<>(
-						parameterTool.getRequired("topic"),
-						new SimpleStringSchema(),
-						parameterTool.getProperties()));
 
-//		SingleOutputStreamOperator<Tuple1> sum = messageStream.map(line->new Tuple1(1)).keyBy(0).window(TumblingAlignedProcessingTimeWindows.of(Time.seconds(1))).sum(0);
-		
+		DataStream<String> messageStream = env.addSource(new FlinkKafkaConsumer010<>(parameterTool.getRequired("topic"),
+				new SimpleStringSchema(), parameterTool.getProperties()));
+
+		messagesCounter = new LongCounter();
 		messageStream.map(new MapFunction<String, String>() {
-			
+
 			@Override
 			public String map(String value) throws Exception {
-				
+				messagesCounter.add(1);
 				JSONObject json = new JSONObject(value);
-				System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
-				
+				System.out.println("Time for streaming (ms): " + (System.currentTimeMillis() - json.getLong("Time")));
+
 				return value;
 			}
 		});
-		
+
 		// write kafka stream to standard out
 		messageStream.print();
 		env.execute();
-		
+
 	}
-	
-	public static int countMessages(){
-		int val = count ++;
-		
-		
-		return val ;
-		
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static LongCounter getmessagesCounter() {
+		return messagesCounter;
 	}
+
+	@Override
+	public void open(Configuration parameters) throws Exception {
+		getRuntimeContext().addAccumulator("messagesCounter", messagesCounter);
+
+	}
+
+	@Override
+	public void close() throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public RuntimeContext getRuntimeContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IterationRuntimeContext getIterationRuntimeContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setRuntimeContext(RuntimeContext t) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * Thread implementation calling flink main job
+	 */
+	@Override
+	public void run() {
+		try {
+			FlinkStreamingJob.main(args);
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+	}
+
 }
