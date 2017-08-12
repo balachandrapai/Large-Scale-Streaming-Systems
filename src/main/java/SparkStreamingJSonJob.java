@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  */
 public class SparkStreamingJSonJob implements Runnable {
 
-	private static Accumulator<Integer> messCounter;
+	private static  Accumulator<Integer> messCounter;
 	private static String[] args={};
 	
 	private static final Pattern SPACE = Pattern.compile(" ");
@@ -104,7 +104,7 @@ public class SparkStreamingJSonJob implements Runnable {
     /**
      * return the value of accumulator called in the driver program
      */
-    public static Integer getAccumulator() {
+    public static  Integer getAccumulator() {
 		return messCounter.value();
 	}
     @Override

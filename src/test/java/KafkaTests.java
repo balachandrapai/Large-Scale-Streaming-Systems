@@ -84,10 +84,7 @@ public class KafkaTests {
 
 		try {
 
-			//SparkStreamingJSonJob.main(new String[] { zookeeperConnect, "my-consumer-group", "test", "1" });
-
-			//FlinkStreamingJobOLD.main(new String[] { "--topic", "test", "--bootstrap.servers", "localhost:9092",
-			//	"--zookeeper.connect", "zookeeperConnect", "--group.id", "my-consumer-group" });
+//			SparkStreamingJSonJob.main(new String[] { zookeeperConnect, "my-consumer-group", "test", "1" });
 
 			//Thread controlling the Spark streaming
 			Thread sparkStreamerThread = new Thread(
@@ -95,29 +92,45 @@ public class KafkaTests {
 					"spark-streaming");
 			sparkStreamerThread.start();
 
+			//Thread to start the producer
+			Thread producerThread = new Thread(new KafkaJSonProducer(), "producer");
+			producerThread.start();
+			
+			//current kafkaTest thread to sleep for 1 second
+			Thread.sleep(60000);
+
+			sparkStreamerThread.interrupt();
+			producerThread.interrupt();
+
+			//flinkStreamerThread.stop();
+
+			int sparkAccVal = SparkStreamingJSonJob.getAccumulator().intValue();
+			System.out.println("Spark Throughput value : " + sparkAccVal);
+
+			// ******************************************************************************************
+
+//			FlinkStreamingJob.main(new String[] { "--topic", "test", "--bootstrap.servers", "localhost:9092",
+//					"--zookeeper.connect", "zookeeperConnect", "--group.id", "my-consumer-group" });
+
 			//Thread controlling the flink streaming
 			/*Thread flinkStreamerThread = new Thread(
 					new FlinkStreamingJob(new String[] { "--topic", "test", "--bootstrap.servers", "localhost:9092",
 							"--zookeeper.connect", "zookeeperConnect", "--group.id", "my-consumer-group" }),
 					"flink-streaming");
 			flinkStreamerThread.start();*/
-			
+
 			//Thread to start the producer
-			Thread producerThread = new Thread(new KafkaJSonProducer(), "producer");
-			producerThread.start();
+//			Thread producerThread = new Thread(new KafkaJSonProducer(), "producer");
+//			producerThread.start();
 
 			//current kafkaTest thread to sleep for 1 second
-			Thread.sleep(30000);
+//			Thread.sleep(60000);
 
-			producerThread.stop();
-			sparkStreamerThread.stop();
-			//flinkStreamerThread.stop();
+//			flinkStreamerThread.interrupt();
+//			producerThread.interrupt();
 
-			int sparkAccVal = SparkStreamingJSonJob.getAccumulator().intValue();
-			System.out.println("Spark Throughput value : " + sparkAccVal);
-
-			//long flinkAccVal = FlinkStreamingJob.getmessagesCounter().getLocalValue().intValue();
-			//System.out.println("Flink Throughput value : " + flinkAccVal);
+//			long flinkAccVal = FlinkStreamingJob.getmessagesCounter().getLocalValue().intValue();
+//			System.out.println("Flink Throughput value : " + flinkAccVal);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
