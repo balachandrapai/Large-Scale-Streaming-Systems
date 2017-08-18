@@ -80,7 +80,7 @@ public class SparkStreamingJSonJob implements Runnable {
                 KafkaUtils.createStream(jssc, args[0], args[1], topicMap);
 
         //Instantiate the accumulator
-        messCounter = jssc.sparkContext().accumulator(1, "messCount");
+        messCounter = jssc.sparkContext().accumulator(0, "messCount");
         
         messages.foreachRDD(new VoidFunction<JavaPairRDD<String, String>>() {
             @Override
@@ -90,8 +90,8 @@ public class SparkStreamingJSonJob implements Runnable {
                     public void call(Tuple2<String, String> stringStringTuple2) throws Exception {
                     	//increment accumulator value for every message call
                     	messCounter.add(1);
-                    	JSONObject json = new JSONObject(stringStringTuple2._2);
-                        System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
+//                    	JSONObject json = new JSONObject(stringStringTuple2._2);
+//                        System.out.println("Time for streaming (ms): " +(System.currentTimeMillis() - json.getLong("Time")));
                     }
                 });
             }
