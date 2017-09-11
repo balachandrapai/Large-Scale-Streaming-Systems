@@ -9,7 +9,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import java.io.*;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 
 /**
@@ -79,17 +81,15 @@ public class KafkaTests {
 	/**
 	 * test directory mode of the trip generator.
 	 */
+	@SuppressWarnings("null")
 	@Test
-	public void someKafkaTest() {
+	public void someKafkaTest() throws IOException {
 
 		try {
-
 //			SparkStreamingJSonJob.main(new String[] { zookeeperConnect, "my-consumer-group", "test", "1" });
 
-			//Thread controlling the Spark streaming
-			Thread sparkStreamerThread = new Thread(
-					new SparkStreamingJSonJob(new String[] { zookeeperConnect, "my-consumer-group", "test", "1" }),
-					"spark-streaming");
+//			Thread controlling the Spark streaming
+			Thread sparkStreamerThread = new Thread(new SparkStreamingJSonJob(new String[] { zookeeperConnect, "my-consumer-group", "test", "1" }),"spark-streaming");
 			sparkStreamerThread.start();
 
 
@@ -99,16 +99,42 @@ public class KafkaTests {
 			Thread producerThread = new Thread(new KafkaJSonProducer(), "producer");
 			producerThread.start();
 
-			//current kafkaTest thread to sleep for 1 second
-			Thread.sleep(60000);
+			//current kafkaTest thread to sleep for 60 second
+			Thread.sleep(30000);
 
 			producerThread.stop();
 
-			int sparkAccVal = SparkStreamingJSonJob.getAccumulator().intValue();
-			System.out.println("Spark Throughput value : " + sparkAccVal/60);
-
-			while (sparkStreamerThread.isAlive())
+			while (sparkStreamerThread.isAlive()){
+//				SparkStreamingJSonJob.jssc.stop();
 				sparkStreamerThread.stop();
+				htu.shutdownMiniZKCluster();
+			}
+			
+			File file=new File("C:/Temp/Throughput.txt");
+			BufferedWriter bufferedWriter=new BufferedWriter(new FileWriter(file.getAbsolutePath()));
+			int sparkAccVal = SparkStreamingJSonJob.getAccumulator().intValue();
+//			System.out.println("Accumulator value : " + sparkAccVal/60);
+			bufferedWriter.write("***************SPARK STREAMING LATENCY AND THROUGHPUT**************** ");
+			bufferedWriter.newLine();
+			bufferedWriter.write("Spark Throughput Value : " + sparkAccVal/30 +" messages/sec");
+			bufferedWriter.newLine();
+			bufferedWriter.newLine();
+			bufferedWriter.write("message Nunber and Latency for the records ");
+			bufferedWriter.newLine();
+			Map<Integer, Long> messTime = SparkStreamingJSonJob.getMessTime();
+			Set<Integer> keySet = messTime.keySet();
+			Long val;
+			int total=0;
+			for (Integer integer : keySet) {
+				val = messTime.get(integer);
+				total+=val;
+				bufferedWriter.write("Message No. : "+ integer + "  "+ "Time(ms) : "+ val);
+				bufferedWriter.newLine();
+			}
+			bufferedWriter.write("Average Latency: "+ (total/keySet.size()));
+			bufferedWriter.close();
+			
+			
 
 			// ******************************************************************************************
 
@@ -150,12 +176,7 @@ public class KafkaTests {
 	@After
 	public void tearDown() {
 		kafka.shutdown();
-
-		try {
-			htu.shutdownMiniZKCluster();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 }

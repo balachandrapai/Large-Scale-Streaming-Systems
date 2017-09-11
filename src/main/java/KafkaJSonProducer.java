@@ -31,7 +31,7 @@ public class KafkaJSonProducer implements Runnable {
 		Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<String, String>(props);
 		try {
 
-			for (int i = 0; i < Integer.MAX_VALUE; i++) {
+			for (int i = 0; i <Integer.MAX_VALUE ; i++) {
 				JSONObject record = new JSONObject();
 				record.put("message_no", i);
 				record.put("Time", System.currentTimeMillis());
